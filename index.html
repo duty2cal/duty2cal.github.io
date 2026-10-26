@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- connect-src 'none' forbids every fetch; the WASM bytes are inlined by
+       scripts/build-web.sh and passed to init(bytes). Never weaken this. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; connect-src 'none'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Duty plan to calendar</title>
+  <link rel="icon" href="./icon.png">
+  <link rel="stylesheet" href="./styles.css">
+  <script src="./capability.js" defer></script>
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header class="page-header">
+    <div class="brand">
+      <img class="app-icon" src="./icon.png" alt="duty2cal" width="48" height="48">
+      <div class="brand-text">
+        <h1>Duty plan to calendar</h1>
+        <p class="lede">Turn one supported duty plan into a calendar file. The plan stays in this tab.</p>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="terms" class="panel" aria-labelledby="terms-heading">
+      <h2 id="terms-heading">Before you choose a plan</h2>
+      <ul class="statements">
+        <li data-site-statement="what-it-does">This tool converts a crew duty plan into a calendar file.</li>
+        <li data-site-statement="browser-route">Convert here, in a current browser, with no installation.</li>
+        <li data-site-statement="archive-route">Downloads for various operating systems are available on request; the <a href="https://github.com/duty2cal/duty2cal/releases">release page</a> carries the published builds.</li>
+        <li data-site-statement="privacy">Processing happens in your browser: no file is uploaded, nothing is stored, and no request is sent after the page loads.</li>
+        <li data-site-statement="non-affiliation">The project is not affiliated with any duty-plan provider or airline.</li>
+        <li data-site-statement="as-is">The software is provided as is, without warranty of any kind.</li>
+      </ul>
+    </section>
+
+    <section id="cannot-run" class="panel panel--failure" hidden>
+      <h2>This browser cannot run the converter</h2>
+      <p id="cannot-run-reason"></p>
+    </section>
+
+    <section id="plan-actions" class="panel" hidden>
+      <p id="status" role="status" aria-live="polite">No plan selected.</p>
+      <div class="controls">
+        <button id="choose" type="button" class="button">Choose a duty plan</button>
+        <label class="visually-hidden" for="plan">Choose a duty plan</label>
+        <input id="plan" type="file" accept="application/pdf,.pdf" hidden>
+      </div>
+      <div id="drop-zone" class="drop-zone">Drop one duty plan here.</div>
+      <div id="offer" class="offer" hidden></div>
+      <section id="failure" class="panel panel--failure" role="alert" hidden>
+        <h2>Conversion failed</h2>
+        <p id="failure-reason"></p>
+        <div id="failure-offer"></div>
+        <p id="failure-note" hidden></p>
+        <button id="reset" type="button" class="button">Choose another plan</button>
+      </section>
+    </section>
+
+    <section id="source" class="panel" aria-labelledby="source-heading">
+      <h2 id="source-heading">Source and licence</h2>
+      <p data-site-statement="source">The source is at <a href="https://github.com/duty2cal/duty2cal">github.com/duty2cal/duty2cal</a>.</p>
+      <p data-site-statement="license">The code is MPL-2.0; non-code assets are CC0-1.0; third-party data is attributed to Unicode-3.0 (<a href="https://github.com/duty2cal/duty2cal/blob/main/LICENSES/MPL-2.0.txt">licence text</a>).</p>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <p>Built from <a href="https://github.com/duty2cal/duty2cal/commit/b18d8df42ff1c7f95667c44bff12c02a7fce75af"><span data-site-statement="built-revision">v0.4.0-123-gb18d8df</span></a></p>
+    <p>Not affiliated with any duty-plan provider or airline. Provided as is, without warranty.</p>
+    <p>No account, email or upload is needed. The page stores nothing and sends no request after it loads.</p>
+  </footer>
+</body>
+</html>

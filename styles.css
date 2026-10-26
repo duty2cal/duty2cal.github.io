@@ -1,0 +1,198 @@
+/* SPDX-License-Identifier: MPL-2.0
+   Converter screen tokens and layout. Colours meet WCAG 2.2 AA; motion uses
+   only opacity/translate and collapses under prefers-reduced-motion. */
+:root {
+  --surface: #ffffff;
+  --surface-muted: #f3f5f7;
+  --ink: #182430;
+  --ink-muted: #44525f;
+  --accent: #0b5cad;
+  --accent-ink: #ffffff;
+  --border: #b8c2cc;
+  --failure-surface: #fdf1f0;
+  --failure-ink: #8a1c13;
+  --focus: #0b5cad;
+  --motion-duration: 120ms;
+  --radius: 8px;
+  --space: 1rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --motion-duration: 0ms;
+  }
+}
+
+body {
+  box-sizing: border-box;
+  margin: 0 auto;
+  max-width: 720px;
+  padding: 16px;
+  background: var(--surface);
+  color: var(--ink);
+  line-height: 1.5;
+}
+
+h1 {
+  font-size: 28px;
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
+}
+
+@media (min-width: 480px) {
+  body {
+    padding: 24px;
+  }
+}
+
+@media (min-width: 720px) {
+  body {
+    max-width: 720px;
+    padding: 32px;
+  }
+
+  h1 {
+    font-size: 36px;
+  }
+}
+
+@media (max-width: 479px) {
+  .controls {
+    flex-direction: column;
+  }
+
+  .controls .button {
+    width: 100%;
+  }
+}
+
+h2 {
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
+}
+
+.lede,
+.page-footer {
+  color: var(--ink-muted);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space);
+}
+
+.brand-text {
+  min-width: 0;
+}
+
+.app-icon {
+  display: block;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius);
+}
+
+.statements {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.statements li {
+  margin: 0 0 0.5rem;
+}
+
+.statements li:last-child {
+  margin-bottom: 0;
+}
+
+.page-footer p {
+  margin: 0 0 0.5rem;
+}
+
+.page-footer p:last-child {
+  margin-bottom: 0;
+}
+
+.panel {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: var(--space);
+  margin-top: var(--space);
+  background: var(--surface);
+}
+
+.panel--failure {
+  background: var(--failure-surface);
+  border-color: var(--failure-ink);
+}
+
+.panel--failure h2 {
+  color: var(--failure-ink);
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: var(--space);
+}
+
+.button {
+  font: inherit;
+  min-height: 44px;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius);
+  background: var(--accent);
+  color: var(--accent-ink);
+  cursor: pointer;
+  transition: opacity var(--motion-duration) ease, transform var(--motion-duration) ease;
+}
+
+.button:hover {
+  opacity: 0.92;
+}
+
+.button:focus-visible,
+a:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.drop-zone {
+  margin-top: var(--space);
+  padding: var(--space);
+  border: 2px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+  text-align: center;
+}
+
+.offer {
+  margin-top: var(--space);
+}
+
+.page-footer {
+  margin-top: calc(var(--space) * 1.5);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space);
+  font-size: 0.9rem;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}

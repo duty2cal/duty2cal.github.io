@@ -22,11 +22,22 @@ const picker = document.getElementById('plan');
 const dropZone = document.getElementById('drop-zone');
 const actions = document.getElementById('plan-actions');
 const offerArea = document.getElementById('offer');
+const offerLinks = document.getElementById('offer-links');
+const offerCopy = document.getElementById('offer-copy');
+const readyStatus = document.getElementById('ready-status');
+const offerNote = document.getElementById('offer-note');
+const warningsBlock = document.getElementById('warnings');
+const warningList = document.getElementById('warning-list');
 const failure = document.getElementById('failure');
 const failureReason = document.getElementById('failure-reason');
+const failureErrors = document.getElementById('failure-errors');
+const errorList = document.getElementById('error-list');
+const failureWarnings = document.getElementById('failure-warnings');
+const failureWarningList = document.getElementById('failure-warning-list');
 const failureOffer = document.getElementById('failure-offer');
 const failureNote = document.getElementById('failure-note');
 const reset = document.getElementById('reset');
+const resetReady = document.getElementById('reset-ready');
 
 /** Decode the build-time base64 string into the bytes `init` instantiates. */
 function decodeBase64(value) {
@@ -59,7 +70,7 @@ function withdrawOffers() {
     URL.revokeObjectURL(url);
   }
   offers = [];
-  offerArea.replaceChildren();
+  offerLinks.replaceChildren();
   offerArea.hidden = true;
   failureOffer.replaceChildren();
 }
@@ -69,8 +80,71 @@ function clearAttempt() {
   withdrawOffers();
   failure.hidden = true;
   failureReason.textContent = '';
+  renderList(warningsBlock, warningList, []);
+  renderList(failureErrors, errorList, []);
+  renderList(failureWarnings, failureWarningList, []);
+  readyStatus.textContent = '';
+  offerNote.textContent = '';
+  offerNote.hidden = true;
   status.textContent = 'No plan selected.';
   setControlsDisabled(false);
+}
+
+/** Fill or hide one diagnostic list. */
+function renderList(container, list, items) {
+  list.replaceChildren();
+  for (const item of items) {
+    const entry = document.createElement('li');
+    entry.textContent = item;
+    list.append(entry);
+  }
+  container.hidden = items.length === 0;
+}
+
+/** An English count word up to twenty, digits above. */
+function countWord(count) {
+  const words = [
+    'zero',
+    'one',
+    'two',
+    'three',
+    'four',
+    'five',
+    'six',
+    'seven',
+    'eight',
+    'nine',
+    'ten',
+    'eleven',
+    'twelve',
+    'thirteen',
+    'fourteen',
+    'fifteen',
+    'sixteen',
+    'seventeen',
+    'eighteen',
+    'nineteen',
+    'twenty',
+  ];
+  return count <= 20 ? words[count] : String(count);
+}
+
+/** The count-based sentence the failure state shows above its lists. */
+function summarizeFailure(name, errors, warnings) {
+  const rows = (count) => `${countWord(count)} ${count === 1 ? 'row' : 'rows'}`;
+  const parts = [];
+  if (errors > 0) {
+    parts.push(`${rows(errors)} that cannot be represented`);
+  }
+  if (warnings > 0) {
+    const verb = warnings === 1 ? 'was' : 'were';
+    const noun = warnings === 1 ? 'a warning' : 'warnings';
+    parts.push(`${rows(warnings)} that ${verb} converted with ${noun}`);
+  }
+  if (parts.length === 0) {
+    return '';
+  }
+  return `${name}: the plan has ${parts.join(' and ')}.`;
 }
 
 /** Enable or disable the plan controls while an attempt is in flight. */
@@ -101,41 +175,61 @@ function addOffer(container, name, content, type) {
   container.append(link);
 }
 
-/** Make the complete calendar available for saving. */
-function offerCalendar(name, calendar) {
-  addOffer(
-    offerArea,
-    `${stemOf(name)}.ics`,
-    calendar,
-    'text/calendar;charset=utf-8',
-  );
-}
-
-/** Show the ready state for a complete calendar. */
-function showReady(name, calendar) {
+/** Show the ready state for a complete calendar, with its warnings. */
+function showReady(name, calendar, warnings, warningReport) {
   try {
-    offerCalendar(name, calendar);
+    addOffer(
+      offerLinks,
+      `${stemOf(name)}.ics`,
+      calendar,
+      'text/calendar;charset=utf-8',
+    );
   } catch {
     // Success is never reported without an offer: this is a failure.
     const reason = 'the calendar could not be offered for saving';
-    showFailure(name, reason, safeDiagnostic(name, reason));
+    showFailure(name, reason, safeDiagnostic(name, reason), [], []);
     return;
   }
-  status.textContent = 'Your calendar is ready to save.';
-  const heading = document.createElement('h2');
-  heading.textContent = 'Calendar ready';
-  offerArea.prepend(heading);
-  const note = document.createElement('p');
-  note.className = 'offer-note';
-  note.textContent = 'Your browser chooses where to save it.';
-  offerArea.append(note);
+
+  const hasWarnings = warnings.length > 0;
+  if (hasWarnings && warningReport) {
+    try {
+      addOffer(
+        offerLinks,
+        `${stemOf(name)}.parse-warnings.txt`,
+        warningReport,
+        'text/plain;charset=utf-8',
+      );
+    } catch {
+      // Keep the calendar and its visible warnings; say what is missing.
+      offerNote.textContent = 'No warning report was offered.';
+      offerNote.hidden = false;
+    }
+  }
+
+  offerCopy.textContent = hasWarnings
+    ? 'Your complete calendar is ready. The browser chooses where the files are saved.'
+    : 'Your complete calendar is ready. The browser chooses where the file is saved.';
+  renderList(warningsBlock, warningList, warnings);
+  if (hasWarnings) {
+    const rows = warnings.length === 1 ? '1 row was' : `${warnings.length} rows were`;
+    const noun = warnings.length === 1 ? 'a warning' : 'warnings';
+    readyStatus.textContent = `Your calendar is ready to save. ${rows} converted with ${noun}.`;
+  } else {
+    readyStatus.textContent = `Calendar ready for ${name}.`;
+  }
+  status.textContent = '';
   offerArea.hidden = false;
 }
 
-/** Show the visible failure, with the diagnostic offer when it exists. */
-function showFailure(name, reason, diagnostic) {
-  status.textContent = 'No calendar was created.';
-  failureReason.textContent = `${name}: ${reason}`;
+/** Show the visible failure, with both lists and the report offer. */
+function showFailure(name, reason, diagnostic, errors, warnings) {
+  status.textContent = '';
+  readyStatus.textContent = '';
+  failureReason.textContent =
+    summarizeFailure(name, errors.length, warnings.length) || `${name}: ${reason}`;
+  renderList(failureErrors, errorList, errors);
+  renderList(failureWarnings, failureWarningList, warnings);
   failureNote.textContent = '';
   failureNote.hidden = true;
   if (diagnostic) {
@@ -146,6 +240,9 @@ function showFailure(name, reason, diagnostic) {
         diagnostic,
         'text/plain;charset=utf-8',
       );
+      failureNote.textContent =
+        'The report names the source, the reason, and every error and warning.';
+      failureNote.hidden = false;
     } catch {
       // Keep the primary failure and say the diagnostic is unavailable.
       failureNote.textContent = 'No diagnostic was offered.';
@@ -162,7 +259,7 @@ async function acceptFile(file) {
 
   if (file.size > MAX_BYTES) {
     const reason = 'the plan is larger than the 20 MiB supported size bound';
-    showFailure(name, reason, safeDiagnostic(name, reason));
+    showFailure(name, reason, safeDiagnostic(name, reason), [], []);
     return;
   }
 
@@ -174,7 +271,7 @@ async function acceptFile(file) {
   } catch {
     needsReinit = true;
     const reason = 'the converter could not be restarted in this browser';
-    showFailure(name, reason, safeDiagnostic(name, reason));
+    showFailure(name, reason, safeDiagnostic(name, reason), [], []);
     setControlsDisabled(false);
     return;
   }
@@ -189,14 +286,14 @@ async function acceptFile(file) {
     // shared two-line diagnostic spelling.
     needsReinit = true;
     const reason = 'the plan could not be processed in this browser';
-    showFailure(name, reason, safeDiagnostic(name, reason));
+    showFailure(name, reason, safeDiagnostic(name, reason), [], []);
     setControlsDisabled(false);
     return;
   }
 
   setControlsDisabled(false);
   if (result && result.status === 'ok' && typeof result.calendar === 'string') {
-    showReady(name, result.calendar);
+    showReady(name, result.calendar, (result && result.warnings) || [], (result && result.warningReport) || "");
     return;
   }
 
@@ -204,7 +301,7 @@ async function acceptFile(file) {
     (result && result.reason) || 'the plan could not be processed in this browser';
   const diagnostic =
     (result && result.diagnostic) || safeDiagnostic(name, reason);
-  showFailure(name, reason, diagnostic);
+  showFailure(name, reason, diagnostic, (result && result.errors) || [], (result && result.warnings) || []);
 }
 
 /** Wire the picker and the way back once the module is usable. */
@@ -229,6 +326,10 @@ function wireControls() {
     }
   });
   reset.addEventListener('click', () => {
+    picker.value = '';
+    clearAttempt();
+  });
+  resetReady.addEventListener('click', () => {
     picker.value = '';
     clearAttempt();
   });

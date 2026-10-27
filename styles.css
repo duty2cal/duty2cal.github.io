@@ -181,6 +181,80 @@ a:focus-visible {
   margin-top: var(--space);
 }
 
+.offer h2 {
+  margin-top: 0;
+}
+
+#offer-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: var(--space);
+}
+
+#offer-links .button {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.offer .button {
+  margin-top: var(--space);
+}
+
+.offer #offer-links .button {
+  margin-top: 0;
+}
+
+.offer-note {
+  color: var(--ink-muted);
+  overflow-wrap: anywhere;
+}
+
+#failure-offer {
+  margin-top: var(--space);
+}
+
+#failure-offer .button {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+#failure > .button {
+  margin-top: var(--space);
+}
+
+.diagnostics {
+  margin-top: var(--space);
+  border-left: 3px solid var(--border);
+  padding-left: var(--space);
+}
+
+.diagnostics h2,
+.diagnostics h3 {
+  font-size: 1rem;
+  line-height: 1.2;
+  margin: 0 0 0.5rem;
+}
+
+.diagnostics__list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.diagnostics__list li {
+  overflow-wrap: anywhere;
+}
+
+.panel--failure .diagnostics__list li::marker {
+  color: var(--failure-ink);
+}
+
 .page-footer {
   margin-top: calc(var(--space) * 1.5);
   border-top: 1px solid var(--border);

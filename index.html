@@ -50,10 +50,29 @@
         <input id="plan" type="file" accept="application/pdf,.pdf" hidden>
       </div>
       <div id="drop-zone" class="drop-zone">Drop one duty plan here.</div>
-      <div id="offer" class="offer" hidden></div>
+      <div id="offer" class="offer" hidden>
+        <h2>Calendar ready</h2>
+        <p id="offer-copy">Your complete calendar is ready. The browser chooses where the file is saved.</p>
+        <div id="offer-links"></div>
+        <div id="warnings" class="diagnostics" hidden>
+          <h3>Warnings</h3>
+          <ul id="warning-list" class="diagnostics__list"></ul>
+        </div>
+        <p id="ready-status" class="offer-note" role="status" aria-live="polite"></p>
+        <p id="offer-note" class="offer-note" hidden></p>
+        <button id="reset-ready" type="button" class="button">Choose another duty plan</button>
+      </div>
       <section id="failure" class="panel panel--failure" role="alert" hidden>
         <h2>Conversion failed</h2>
         <p id="failure-reason"></p>
+        <div id="failure-errors" class="diagnostics" hidden>
+          <h3>Errors</h3>
+          <ul id="error-list" class="diagnostics__list"></ul>
+        </div>
+        <div id="failure-warnings" class="diagnostics" hidden>
+          <h3>Warnings</h3>
+          <ul id="failure-warning-list" class="diagnostics__list"></ul>
+        </div>
         <div id="failure-offer"></div>
         <p id="failure-note" hidden></p>
         <button id="reset" type="button" class="button">Choose another plan</button>
@@ -68,7 +87,7 @@
   </main>
 
   <footer class="page-footer">
-    <p>Built from <a href="https://github.com/duty2cal/duty2cal/commit/3f6e3837d45460135c2ed88b3f38f7389ef85006"><span data-site-statement="built-revision">v1.0.0-35-g3f6e383</span></a></p>
+    <p>Built from <a href="https://github.com/duty2cal/duty2cal/commit/04682eee427fac34a0d396f1e4acf82696251a8f"><span data-site-statement="built-revision">v1.0.0-87-g04682ee</span></a></p>
     <p>No account, email or upload is needed. The page stores nothing and sends no request after it loads.</p>
     <p><a href="./impressum.html">Impressum</a> · <a href="./privacy.html">Datenschutz</a></p>
   </footer>

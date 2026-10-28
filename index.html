@@ -51,16 +51,16 @@
       </div>
       <div id="drop-zone" class="drop-zone">Drop one duty plan here.</div>
       <div id="offer" class="offer" hidden>
-        <h2>Calendar ready</h2>
-        <p id="offer-copy">Your complete calendar is ready. The browser chooses where the file is saved.</p>
-        <div id="offer-links"></div>
+        <h2>Calendar ICS ready</h2>
+        <p id="ready-status" class="offer-note" role="status" aria-live="polite"></p>
         <div id="warnings" class="diagnostics" hidden>
-          <h3>Warnings</h3>
+          <h3>Unknown duties</h3>
           <ul id="warning-list" class="diagnostics__list"></ul>
         </div>
-        <p id="ready-status" class="offer-note" role="status" aria-live="polite"></p>
+        <p id="offer-copy">You can choose where to save the file.</p>
+        <div id="offer-links"></div>
         <p id="offer-note" class="offer-note" hidden></p>
-        <button id="reset-ready" type="button" class="button">Choose another duty plan</button>
+        <button id="reset-ready" type="button" class="button">Open new/next duty plan PDF</button>
       </div>
       <section id="failure" class="panel panel--failure" role="alert" hidden>
         <h2>Conversion failed</h2>
@@ -87,7 +87,7 @@
   </main>
 
   <footer class="page-footer">
-    <p>Built from <a href="https://github.com/duty2cal/duty2cal/commit/27fc11ff1a5e925c2822fc822d1c95a680b8b93d"><span data-site-statement="built-revision">v1.1.0</span></a></p>
+    <p>Built from <a href="https://github.com/duty2cal/duty2cal/commit/2631bbb896917e795a321696e1ca583c94ea555d"><span data-site-statement="built-revision">v1.1.0-44-g2631bbb</span></a></p>
     <p>No account, email or upload is needed. The page stores nothing and sends no request after it loads.</p>
     <p><a href="./impressum.html">Impressum</a> · <a href="./privacy.html">Datenschutz</a></p>
   </footer>

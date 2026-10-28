@@ -164,19 +164,27 @@ async function ensureInstance() {
 }
 
 /** Add one in-memory download offer to a container. */
-function addOffer(container, name, content, type) {
+function addOffer(container, name, content, type, label = `Save ${name}`) {
   const url = URL.createObjectURL(new Blob([content], { type }));
   offers.push(url);
   const link = document.createElement('a');
   link.href = url;
   link.download = name;
   link.className = 'button';
-  link.textContent = `Save ${name}`;
+  link.textContent = label;
   container.append(link);
 }
 
-/** Show the ready state for a complete calendar, with its warnings. */
-function showReady(name, calendar, warnings, warningReport) {
+/** One ready-list line for a represented unknown duty. */
+function unknownDutyLine(duty) {
+  const prefix = duty.start
+    ? `${duty.date} ${duty.start} UTC`
+    : duty.date;
+  return `${prefix} unknown duty: ${duty.code}`;
+}
+
+/** Show the ready state for a complete calendar, with its unknown duties. */
+function showReady(name, calendar, warnings, warningReport, unknownDuties) {
   try {
     addOffer(
       offerLinks,
@@ -199,6 +207,7 @@ function showReady(name, calendar, warnings, warningReport) {
         `${stemOf(name)}.parse-warnings.txt`,
         warningReport,
         'text/plain;charset=utf-8',
+        'Save unknown duty warning for publisher',
       );
     } catch {
       // Keep the calendar and its visible warnings; say what is missing.
@@ -207,13 +216,14 @@ function showReady(name, calendar, warnings, warningReport) {
     }
   }
 
-  offerCopy.textContent = hasWarnings
-    ? 'Your complete calendar is ready. The browser chooses where the files are saved.'
-    : 'Your complete calendar is ready. The browser chooses where the file is saved.';
-  renderList(warningsBlock, warningList, warnings);
-  if (hasWarnings) {
-    const rows = warnings.length === 1 ? '1 row was' : `${warnings.length} rows were`;
-    const noun = warnings.length === 1 ? 'a warning' : 'warnings';
+  renderList(warningsBlock, warningList, unknownDuties.map(unknownDutyLine));
+  if (unknownDuties.length > 0) {
+    const rows =
+      unknownDuties.length === 1
+        ? '1 row was'
+        : `${unknownDuties.length} rows were`;
+    const noun =
+      unknownDuties.length === 1 ? 'an unknown duty' : 'unknown duties';
     readyStatus.textContent = `Your calendar is ready to save. ${rows} converted with ${noun}.`;
   } else {
     readyStatus.textContent = `Calendar ready for ${name}.`;
@@ -293,7 +303,13 @@ async function acceptFile(file) {
 
   setControlsDisabled(false);
   if (result && result.status === 'ok' && typeof result.calendar === 'string') {
-    showReady(name, result.calendar, (result && result.warnings) || [], (result && result.warningReport) || "");
+    showReady(
+      name,
+      result.calendar,
+      (result && result.warnings) || [],
+      (result && result.warningReport) || '',
+      (result && result.unknownDuties) || [],
+    );
     return;
   }
 
